@@ -36,7 +36,7 @@ app.use('/', (req, res) => {
     .then(r => r.json())
     .then(json => {
       send(
-        `The current price for ${currency} on bitfinex.com is $${json[7].toFixed(2)}`
+        `The current price for ${currency} on bitfinex.com is $${json[6].toFixed(2)}`
       );
     });
 });
