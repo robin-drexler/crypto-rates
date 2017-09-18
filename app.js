@@ -16,7 +16,8 @@ const askRateIntent = app => {
   const supportedCurrencies = {
     bitcoin: 'BTC',
     ethereum: 'ETH',
-    iota: 'IOT'
+    iota: 'IOT',
+    litecoin: 'LTC'
   };
 
   const currency = app.getArgument('crypto-currency');
