@@ -12,7 +12,30 @@ app.use(bodyParser.urlencoded({ extended: false }));
  * 
  * @param {ApiAiApp} app 
  */
+const hasScreen = app =>
+  app.hasSurfaceCapability(app.SurfaceCapabilities.SCREEN_OUTPUT);
+
+/**
+ * 
+ * @param {ApiAiApp} app 
+ */
 const askRateIntent = app => {
+  const handleUnsupportedCurrency = currency => {
+    if (hasScreen(app)) {
+      return app.ask(
+        app
+          .buildRichResponse()
+          .addSimpleResponse(
+            `Sorry, I can't tell the exchange rate for ${currency} yet. Would you like to check on bitfinex.com?`
+          )
+          .addSuggestionLink('bitfinex.com', 'https://www.bitfinex.com/')
+      );
+    }
+    return app.tell(
+      `Sorry, I can't tell the exchange rate for ${currency} yet.`
+    );
+  };
+
   const supportedCurrencies = {
     bitcoin: 'BTC',
     ethereum: 'ETH',
@@ -28,9 +51,7 @@ const askRateIntent = app => {
 
   const symbol = supportedCurrencies[currency];
   if (!symbol) {
-    return app.tell(
-      `Sorry, I can't tell the exchange rate for ${currency} yet. But, I'm learning every day.`
-    );
+    return handleUnsupportedCurrency(currency);
   }
 
   fetch(`https://api.bitfinex.com/v2/ticker/t${symbol}USD`)
