@@ -3,8 +3,14 @@ const bodyParser = require('body-parser');
 const fetch = require('node-fetch');
 const DialogflowApp = require('actions-on-google').DialogflowApp;
 const NodeCache = require('node-cache');
+const i18n = require('i18n');
 
 const cache = new NodeCache({ stdTTL: 300 });
+
+i18n.configure({
+  directory: __dirname + '/locales'
+});
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -49,7 +55,7 @@ const getRateResult = (url) => {
 
 /**
  *
- * @param {ApiAiApp} app
+ * @param {DialogflowApp} app
  */
 const askRateIntent = (app) => {
   const supportedCurrencies = [
@@ -61,26 +67,32 @@ const askRateIntent = (app) => {
     'monero'
   ];
 
+  const lang = app.body_.lang;
+  const translate = {};
+  i18n.init(translate);
+  i18n.setLocale(translate, lang);
+  console.log(translate.__mf('Hello'));
+
   const currency = app.getArgument('crypto-currency');
 
   if (!currency) {
-    return app.tell("Sorry, I don't understand that yet");
+    return app.tell(translate.__mf('currency-not-provided'));
   }
 
   if (!supportedCurrencies.includes(currency)) {
-    return app.tell(
-      `Sorry, I can't tell the exchange rate for ${currency} yet.`
-    );
+    return app.tell(translate.__mf('currency-unknown', { currency }));
   }
 
   const url = `https://api.coinmarketcap.com/v1/ticker/${currency}`;
 
   getRateResult(url).then((json) => {
     return app.tell(
-      `The current price for ${json.name} on coinmarketcap.com is $${parseFloat(
-        json.price_usd,
-        10
-      ).toFixed(2)}`
+      translate.__mf('tell-price', {
+        currency: json.name,
+        platform: 'coinmarketcap.com',
+        price: parseFloat(json.price_usd, 10).toFixed(2),
+        targetCurrency: '$'
+      })
     );
   });
 };

@@ -1,0 +1,8 @@
+{
+  "currency-not-provided":
+    "Keine Währung erkannt. Bitte versuche es anders. Zum Beispiel kannst du fragen: \"Wie ist der bitcoin preis?\"",
+  "currency-unknown":
+    "Entschuldige, aber ich kenne den Wert für {currency} noch nicht.",
+  "tell-price":
+    "Der aktuelle Preis für {currency} auf {platform} liegt bei {price} {targetCurrency}"
+}
