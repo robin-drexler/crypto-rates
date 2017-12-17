@@ -16,6 +16,15 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+const SUPPORTED_CURRENCIES = [
+  'bitcoin',
+  'ethereum',
+  'iota',
+  'litecoin',
+  'neo',
+  'monero'
+];
+
 /**
  *
  * @param {ApiAiApp} app
@@ -34,6 +43,15 @@ const hasScreen = (app) =>
 //       .addSuggestionLink('bitfinex.com', 'https://www.bitfinex.com/')
 //   );
 // }
+
+const getTranslate = (app) => {
+  const lang = app.body_.lang;
+  const translate = {};
+  i18n.init(translate);
+  i18n.setLocale(translate, lang);
+
+  return translate;
+};
 
 const getRateResult = (url) => {
   const cachedResult = cache.get(url);
@@ -58,20 +76,7 @@ const getRateResult = (url) => {
  * @param {DialogflowApp} app
  */
 const askRateIntent = (app) => {
-  const supportedCurrencies = [
-    'bitcoin',
-    'ethereum',
-    'iota',
-    'litecoin',
-    'neo',
-    'monero'
-  ];
-
-  const lang = app.body_.lang;
-  const translate = {};
-  i18n.init(translate);
-  i18n.setLocale(translate, lang);
-  console.log(translate.__mf('Hello'));
+  const translate = getTranslate(app);
 
   const currency = app.getArgument('crypto-currency');
 
@@ -79,7 +84,7 @@ const askRateIntent = (app) => {
     return app.tell(translate.__mf('currency-not-provided'));
   }
 
-  if (!supportedCurrencies.includes(currency)) {
+  if (!SUPPORTED_CURRENCIES.includes(currency)) {
     return app.tell(translate.__mf('currency-unknown', { currency }));
   }
 
@@ -97,11 +102,22 @@ const askRateIntent = (app) => {
   });
 };
 
+const askSupportedCurrenciesIntent = (app) => {
+  const translate = getTranslate(app);
+
+  return app.tell(
+    translate.__mf('tell-supported-currencies', {
+      currencies: SUPPORTED_CURRENCIES.join(',')
+    })
+  );
+};
+
 app.use('/', (req, res) => {
   const app = new DialogflowApp({ request: req, response: res });
   const actionMap = new Map();
 
   actionMap.set('ask.rate', askRateIntent);
+  actionMap.set('ask.supported.currencies', askSupportedCurrenciesIntent);
   app.handleRequest(actionMap);
 });
 

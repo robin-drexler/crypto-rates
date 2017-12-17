@@ -4,5 +4,7 @@
   "currency-unknown":
     "Entschuldige, aber ich kenne den Wert für {currency} noch nicht.",
   "tell-price":
-    "Der aktuelle Preis für {currency} auf {platform} liegt bei {price} {targetCurrency}"
+    "Der aktuelle Preis für {currency} auf {platform} liegt bei {price} {targetCurrency}",
+  "tell-supported-currencies":
+    "Ich unterstütze aktuell die folgenden Kryptowährungen: {currencies}"
 }
