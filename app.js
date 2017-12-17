@@ -2,7 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fetch = require('node-fetch');
 const DialogflowApp = require('actions-on-google').DialogflowApp;
+const NodeCache = require('node-cache');
 
+const cache = new NodeCache({ stdTTL: 300 });
 const app = express();
 
 app.use(bodyParser.json());
@@ -12,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
  *
  * @param {ApiAiApp} app
  */
-const hasScreen = app =>
+const hasScreen = (app) =>
   app.hasSurfaceCapability(app.SurfaceCapabilities.SCREEN_OUTPUT);
 
 // example for screen cap
@@ -27,11 +29,29 @@ const hasScreen = app =>
 //   );
 // }
 
+const getRateResult = (url) => {
+  const cachedResult = cache.get(url);
+
+  if (cachedResult) {
+    console.log('Returning cached result for', url);
+    return Promise.resolve(cachedResult);
+  }
+
+  console.log('Fetching', url);
+
+  return fetch(url)
+    .then((r) => r.json())
+    .then(([json]) => {
+      cache.set(url, json);
+      return json;
+    });
+};
+
 /**
  *
  * @param {ApiAiApp} app
  */
-const askRateIntent = app => {
+const askRateIntent = (app) => {
   const supportedCurrencies = ['bitcoin', 'ethereum', 'iota', 'litecoin'];
 
   const currency = app.getArgument('crypto-currency');
@@ -46,15 +66,16 @@ const askRateIntent = app => {
     );
   }
 
-  fetch(`https://api.coinmarketcap.com/v1/ticker/${currency}`)
-    .then(r => r.json())
-    .then(([json]) => {
-      return app.tell(
-        `The current price for ${
-          json.name
-        } on coinmarketcap.com is $${parseFloat(json.price_usd, 10).toFixed(2)}`
-      );
-    });
+  const url = `https://api.coinmarketcap.com/v1/ticker/${currency}`;
+
+  getRateResult(url).then((json) => {
+    return app.tell(
+      `The current price for ${json.name} on coinmarketcap.com is $${parseFloat(
+        json.price_usd,
+        10
+      ).toFixed(2)}`
+    );
+  });
 };
 
 app.use('/', (req, res) => {

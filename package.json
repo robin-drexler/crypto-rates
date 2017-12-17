@@ -10,6 +10,7 @@
     "actions-on-google": "^1.6.1",
     "body-parser": "~1.18.2",
     "express": "~4.16.2",
+    "node-cache": "^4.1.1",
     "node-fetch": "^1.7.3"
   },
   "devDependencies": {
