@@ -52,7 +52,14 @@ const getRateResult = (url) => {
  * @param {ApiAiApp} app
  */
 const askRateIntent = (app) => {
-  const supportedCurrencies = ['bitcoin', 'ethereum', 'iota', 'litecoin'];
+  const supportedCurrencies = [
+    'bitcoin',
+    'ethereum',
+    'iota',
+    'litecoin',
+    'neo',
+    'monero'
+  ];
 
   const currency = app.getArgument('crypto-currency');
 
