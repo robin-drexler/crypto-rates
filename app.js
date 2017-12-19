@@ -25,6 +25,19 @@ const SUPPORTED_CURRENCIES = [
   'monero'
 ];
 
+const appendChangeIndicator = (string, value) => {
+  if (value === 0) {
+    return `${string}-stale`;
+  }
+
+  if (value > 0) {
+    return `${string}-positive`;
+  }
+  if (value < 0) {
+    return `${string}-negative`;
+  }
+};
+
 /**
  *
  * @param {ApiAiApp} app
@@ -77,7 +90,6 @@ const getRateResult = (url) => {
  */
 const askRateIntent = (app) => {
   const translate = getTranslate(app);
-
   const currency = app.getArgument('crypto-currency');
 
   if (!currency) {
@@ -92,12 +104,20 @@ const askRateIntent = (app) => {
 
   getRateResult(url).then((json) => {
     return app.tell(
-      translate.__mf('tell-price', {
+      `${translate.__mf('tell-price', {
         currency: json.name,
         platform: 'coinmarketcap.com',
         price: parseFloat(json.price_usd, 10).toFixed(2),
         targetCurrency: '$'
-      })
+      })}
+      ${translate.__mf(
+        appendChangeIndicator('tell-change', json.percent_change_24h),
+        {
+          daysTR: translate.__n('day', 1, { days: 1 }),
+          days: 1,
+          change: Math.abs(json.percent_change_24h)
+        }
+      )}`
     );
   });
 };

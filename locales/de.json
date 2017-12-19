@@ -5,6 +5,12 @@
     "Entschuldige, aber ich kenne den Wert für {currency} noch nicht.",
   "tell-price":
     "Der aktuelle Preis für {currency} auf {platform} liegt bei {price} {targetCurrency}",
+  "day": {
+    "one": "Es ist seit gestern",
+    "other": "Im vergleich zu vor %s Tagen, ist es"
+  },
+  "tell-change-negative": "{daysTR} um {change}% gesunken.",
+  "tell-change-positive": "{daysTR} um {change}% gestiegen.",
   "tell-supported-currencies":
     "Ich unterstütze aktuell die folgenden Kryptowährungen: {currencies}"
 }
