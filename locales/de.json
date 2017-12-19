@@ -4,7 +4,7 @@
   "currency-unknown":
     "Entschuldige, aber ich kenne den Wert für {currency} noch nicht.",
   "tell-price":
-    "Der aktuelle Preis für {currency} auf {platform} liegt bei {price} {targetCurrency}",
+    "Der aktuelle Preis für {currency} auf {platform} liegt bei {price} {targetCurrency}.",
   "day": {
     "one": "Es ist seit gestern",
     "other": "Im vergleich zu vor %s Tagen, ist es"
